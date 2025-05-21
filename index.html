@@ -4,218 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>晒单信息生成器</title>
-    <style>
-        body {
-            font-family: "Microsoft YaHei", Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f0f8ff;
-            background-image: linear-gradient(to bottom right, #e6f2ff, #f0f8ff);
-            color: #333;
-            line-height: 1.6;
-        }
-        .container {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-        h1 {
-            color: #0066cc;
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 28px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-            border-bottom: 2px solid #e6f2ff;
-            padding-bottom: 15px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #0066cc;
-        }
-        input[type="text"], textarea, input[type="date"], select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cce0ff;
-            border-radius: 6px;
-            box-sizing: border-box;
-            background-color: #f9fcff;
-            transition: border 0.3s, box-shadow 0.3s;
-        }
-        input[type="text"]:focus, textarea:focus, input[type="date"]:focus, select:focus {
-            border-color: #66afe9;
-            outline: 0;
-            box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
-        }
-        button {
-            background-color: #0066cc;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            display: block;
-            margin: 25px auto;
-            transition: background-color 0.3s, transform 0.2s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        button:hover {
-            background-color: #0055aa;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
-        }
-        .result {
-            background-color: white;
-            border: 1px solid #cce0ff;
-            padding: 20px;
-            border-radius: 6px;
-            margin-top: 20px;
-            white-space: pre-line;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        .copy-btn {
-            background-color: #28a745;
-            margin-top: 15px;
-        }
-        .copy-btn:hover {
-            background-color: #218838;
-        }
-        .activity-type-container {
-            display: flex;
-            gap: 10px;
-        }
-        .activity-type-container input {
-            flex: 2;
-        }
-        .activity-type-container select {
-            flex: 1;
-        }
-        .personnel-container {
-            margin-bottom: 10px;
-            display: flex;
-            gap: 10px;
-            width: 100%; /* 使宽度与其他输入项一致 */
-        }
-        .personnel-container select {
-            flex: 1;
-            height: 38px; /* 减小高度 */
-        }
-        .personnel-container input {
-            flex: 2;
-            height: 38px; /* 减小高度 */
-        }
-        .add-btn {
-            background-color: #0066cc;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 6px 10px; /* 减小按钮内边距 */
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
-            height: 38px; /* 设置与输入框相同的高度 */
-            margin: 0; /* 移除按钮的外边距 */
-        }
-        .add-btn:hover {
-            background-color: #0055aa;
-        }
-        .header-icon {
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 40px;
-            color: #0066cc;
-        }
-        .result-header {
-            font-weight: bold;
-            color: #0066cc;
-            margin-bottom: 10px;
-            font-size: 18px;
-            border-bottom: 1px solid #e6f2ff;
-            padding-bottom: 8px;
-        }
-        .form-section {
-            border-left: 3px solid #0066cc;
-            padding-left: 15px;
-            margin-bottom: 25px;
-        }
-        .form-section-title {
-            font-weight: bold;
-            color: #0066cc;
-            margin-bottom: 15px;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #666;
-            font-size: 12px;
-        }
-        .error-message {
-            color: #dc3545;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-        .input-error {
-            border-color: #dc3545 !important;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        .modal-content {
-            background-color: #fff;
-            margin: 15% auto;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
-            position: relative;
-        }
-        .modal-header {
-            color: #dc3545;
-            font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 18px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-        .modal-body {
-            margin-bottom: 20px;
-        }
-        .modal-footer {
-            text-align: right;
-        }
-        .close-modal {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 0;
-        }
-        .close-modal:hover {
-            background-color: #5a6268;
-        }
-    </style>
+    <link rel="stylesheet" href="./show.css">
+  
 </head>
 <body>
     <div class="container">
@@ -232,15 +22,47 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="activityScenario">促销/拜访类型：</label>
-                    <div class="activity-type-container">
-                        <input type="text" id="activityScenario" placeholder="请输入场景，例如：集团社区场景">
-                        <select id="activityType">
-                            <option value="促销">促销</option>
-                            <option value="拜访">拜访</option>
-                        </select>
-                    </div>
-                    <div class="error-message" id="activityScenario-error">请输入场景</div>
+                    <label for="scenarioType">场景选择：</label>
+                    <select id="scenarioType">
+                        <option value="">请选择场景类型</option>
+                        <option value="主题场景">主题场景</option>
+                        <option value="指定清单场景">指定清单场景</option>
+                    </select>
+                    <div class="error-message" id="scenarioType-error">请选择场景类型</div>
+                </div>
+                
+                <div class="form-group" id="themeScenarioGroup" style="display: none;">
+                    <label for="themeScenario">主题场景类型：</label>
+                    <select id="themeScenario">
+                        <option value="">请选择主题场景类型</option>
+                        <option value="大集团">大集团</option>
+                        <option value="酒店">酒店</option>
+                        <option value="幼儿园">幼儿园</option>
+                        <option value="商圈">商圈</option>
+                        <option value="大型社区">大型社区</option>
+                    </select>
+                    <div class="error-message" id="themeScenario-error">请选择主题场景类型</div>
+                </div>
+                
+                <div class="form-group" id="listScenarioGroup" style="display: none;">
+                    <label for="listScenario">指定清单场景类型：</label>
+                    <select id="listScenario">
+                        <option value="">请选择指定清单场景类型</option>
+                        <option value="重点小区">重点小区</option>
+                        <option value="漫入社区">漫入社区</option>
+                        <option value="重点集团">重点集团</option>
+                        <option value="百万集团">百万集团</option>
+                        <option value="乡村">乡村</option>
+                    </select>
+                    <div class="error-message" id="listScenario-error">请选择指定清单场景类型</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="activityType">活动类型：</label>
+                    <select id="activityType">
+                        <option value="促销">促销</option>
+                        <option value="拜访">拜访</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -289,6 +111,22 @@
                     <textarea id="effect" rows="3" placeholder="例如：五一期间在安芬娜社区对群众开展促销活动，对云电脑，ai手机、体锻、家庭宽带等进行活动推广。"></textarea>
                     <div class="error-message" id="effect-error">请输入促销/拜访效果</div>
                 </div>
+                
+                <div class="form-group">
+                    <label for="isProperty">是否物业类：</label>
+                    <select id="isProperty">
+                        <option value="是">是</option>
+                        <option value="否">否</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="isEnterpriseGroup">是否企宽集团：</label>
+                    <select id="isEnterpriseGroup">
+                        <option value="是">是</option>
+                        <option value="否">否</option>
+                    </select>
+                </div>
             </div>
             
             <button id="generateBtn">生成晒单信息</button>
@@ -320,272 +158,6 @@
         </div>
     </div>
     
-    <script>
-        // 存储人员列表
-        let personnelArray = [];
-        
-        // 添加人员按钮点击事件
-        document.getElementById('addPersonBtn').addEventListener('click', function() {
-            const position = document.getElementById('personPosition').value;
-            const name = document.getElementById('personName').value.trim();
-            
-            if (name) {
-                // 添加到人员数组
-                personnelArray.push({ position, name });
-                
-                // 更新人员列表显示
-                updatePersonnelList();
-                
-                // 清空姓名输入框
-                document.getElementById('personName').value = '';
-                
-                // 清除人员错误提示
-                hideError('personnel');
-            } else {
-                alert('请输入人员姓名');
-            }
-        });
-        
-        // 更新人员列表显示
-        function updatePersonnelList() {
-            const personnelList = document.getElementById('personnelList');
-            
-            if (personnelArray.length > 0) {
-                personnelList.style.display = 'block';
-                
-                // 清空列表
-                personnelList.innerHTML = '';
-                
-                // 添加每个人员项
-                personnelArray.forEach((person, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'personnel-item';
-                    
-                    const text = document.createElement('span');
-                    text.textContent = `${person.position}：${person.name}`;
-                    
-                    const removeBtn = document.createElement('button');
-                    removeBtn.className = 'remove-btn';
-                    removeBtn.textContent = '删除';
-                    removeBtn.onclick = function() {
-                        personnelArray.splice(index, 1);
-                        updatePersonnelList();
-                        
-                        // 如果删除后人员列表为空，显示错误提示
-                        if (personnelArray.length === 0) {
-                            showError('personnel', '请添加至少一名人员');
-                        }
-                    };
-                    
-                    item.appendChild(text);
-                    item.appendChild(removeBtn);
-                    personnelList.appendChild(item);
-                });
-            } else {
-                personnelList.style.display = 'none';
-            }
-        }
-        
-        // 显示错误提示
-        function showError(fieldId, message) {
-            const errorElement = document.getElementById(`${fieldId}-error`);
-            if (errorElement) {
-                errorElement.textContent = message;
-                errorElement.style.display = 'block';
-                
-                // 为对应的输入框添加错误样式
-                const inputElement = document.getElementById(fieldId);
-                if (inputElement) {
-                    inputElement.classList.add('input-error');
-                }
-            }
-        }
-        
-        // 隐藏错误提示
-        function hideError(fieldId) {
-            const errorElement = document.getElementById(`${fieldId}-error`);
-            if (errorElement) {
-                errorElement.style.display = 'none';
-                
-                // 移除对应输入框的错误样式
-                const inputElement = document.getElementById(fieldId);
-                if (inputElement) {
-                    inputElement.classList.remove('input-error');
-                }
-            }
-        }
-        
-        // 显示模态框
-        function showModal(message) {
-            document.getElementById('errorModalBody').textContent = message;
-            document.getElementById('errorModal').style.display = 'block';
-        }
-        
-        // 关闭模态框
-        document.getElementById('closeModal').addEventListener('click', function() {
-            document.getElementById('errorModal').style.display = 'none';
-        });
-        
-        // 点击模态框外部关闭
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('errorModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-        
-        // 验证表单
-        function validateForm() {
-            let isValid = true;
-            let emptyFields = [];
-            
-            // 验证网格名称
-            const gridName = document.getElementById('gridName').value.trim();
-            if (!gridName) {
-                showError('gridName', '请输入网格名称');
-                isValid = false;
-                emptyFields.push('网格名称');
-            } else {
-                hideError('gridName');
-            }
-            
-            // 验证场景
-            const activityScenario = document.getElementById('activityScenario').value.trim();
-            if (!activityScenario) {
-                showError('activityScenario', '请输入场景');
-                isValid = false;
-                emptyFields.push('促销/拜访类型的场景');
-            } else {
-                hideError('activityScenario');
-            }
-            
-            // 验证时间
-            const time = document.getElementById('time').value;
-            if (!time) {
-                showError('time', '请选择时间');
-                isValid = false;
-                emptyFields.push('促销/拜访时间');
-            } else {
-                hideError('time');
-            }
-            
-            // 验证地点
-            const location = document.getElementById('location').value.trim();
-            if (!location) {
-                showError('location', '请输入地点');
-                isValid = false;
-                emptyFields.push('促销/拜访地点');
-            } else {
-                hideError('location');
-            }
-            
-            // 验证人员
-            if (personnelArray.length === 0) {
-                showError('personnel', '请添加至少一名人员');
-                isValid = false;
-                emptyFields.push('促销/拜访人员');
-            } else {
-                hideError('personnel');
-            }
-            
-            // 验证业务
-            const business = document.getElementById('business').value.trim();
-            if (!business) {
-                showError('business', '请输入成交业务');
-                isValid = false;
-                emptyFields.push('促销/拜访成交业务');
-            } else {
-                hideError('business');
-            }
-            
-            // 验证效果
-            const effect = document.getElementById('effect').value.trim();
-            if (!effect) {
-                showError('effect', '请输入促销/拜访效果');
-                isValid = false;
-                emptyFields.push('促销/拜访效果');
-            } else {
-                hideError('effect');
-            }
-            
-            // 如果验证失败，显示模态框
-            if (!isValid) {
-                const message = `以下项目未填写：\n${emptyFields.join('\n')}`;
-                showModal(message);
-            }
-            
-            return isValid;
-        }
-        
-        // 为所有输入框添加输入事件监听，在输入时隐藏错误提示
-        document.querySelectorAll('input, textarea, select').forEach(element => {
-            element.addEventListener('input', function() {
-                const id = this.id;
-                if (id) {
-                    hideError(id);
-                }
-            });
-        });
-        
-        document.getElementById('generateBtn').addEventListener('click', function() {
-            // 验证表单
-            if (!validateForm()) {
-                return;
-            }
-            
-            // 获取所有输入值
-            const gridName = document.getElementById('gridName').value.trim();
-            
-            // 获取场景和活动类型
-            const activityScenario = document.getElementById('activityScenario').value.trim();
-            const activityTypeValue = document.getElementById('activityType').value;
-            const fullActivityType = activityScenario + activityTypeValue;
-            
-            // 获取日期并格式化为中文格式
-            let timeValue = '';
-            const dateInput = document.getElementById('time').value;
-            if (dateInput) {
-                const date = new Date(dateInput);
-                timeValue = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-            }
-            
-            const location = document.getElementById('location').value.trim();
-            
-            // 格式化人员列表
-            let personnelText = '';
-            if (personnelArray.length > 0) {
-                personnelText = personnelArray.map(person => `${person.position}${person.name}`).join('、');
-            }
-            
-            const business = document.getElementById('business').value.trim();
-            const effect = document.getElementById('effect').value.trim();
-            
-            // 生成晒单信息
-            const result = `【${gridName}-${fullActivityType}】 
-1、促销/拜访时间：${timeValue} 
-2、促销/拜访地点：${location} 
-3、促销/拜访人员：${personnelText} 
-4、促销/拜访成交业务：${business} 
-5、促销/拜访效果：${effect}`;
-            
-            // 显示结果
-            document.getElementById('resultText').textContent = result;
-            document.getElementById('resultContainer').style.display = 'block';
-            
-            // 滚动到结果区域
-            document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
-        });
-        
-        document.getElementById('copyBtn').addEventListener('click', function() {
-            const resultText = document.getElementById('resultText').textContent;
-            
-            // 复制到剪贴板
-            navigator.clipboard.writeText(resultText).then(function() {
-                alert('已复制到剪贴板！');
-            }).catch(function(err) {
-                alert('复制失败，请手动复制：' + err);
-            });
-        });
-    </script>
+    <script src="./show.js"> </script>
 </body>
 </html>

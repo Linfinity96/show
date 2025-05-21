@@ -1,0 +1,326 @@
+// 存储人员列表
+    let personnelArray = [];
+        
+    // 添加人员按钮点击事件
+    document.getElementById('addPersonBtn').addEventListener('click', function() {
+        const position = document.getElementById('personPosition').value;
+        const name = document.getElementById('personName').value.trim();
+        
+        if (name) {
+            // 添加到人员数组
+            personnelArray.push({ position, name });
+            
+            // 更新人员列表显示
+            updatePersonnelList();
+            
+            // 清空姓名输入框
+            document.getElementById('personName').value = '';
+            
+            // 清除人员错误提示
+            hideError('personnel');
+        } else {
+            alert('请输入人员姓名');
+        }
+    });
+    
+    // 更新人员列表显示
+    function updatePersonnelList() {
+        const personnelList = document.getElementById('personnelList');
+        
+        if (personnelArray.length > 0) {
+            personnelList.style.display = 'block';
+            
+            // 清空列表
+            personnelList.innerHTML = '';
+            
+            // 添加每个人员项
+            personnelArray.forEach((person, index) => {
+                const item = document.createElement('div');
+                item.className = 'personnel-item';
+                
+                const text = document.createElement('span');
+                text.textContent = `${person.position}：${person.name}`;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-btn';
+                removeBtn.textContent = '删除';
+                removeBtn.onclick = function() {
+                    personnelArray.splice(index, 1);
+                    updatePersonnelList();
+                    
+                    // 如果删除后人员列表为空，显示错误提示
+                    if (personnelArray.length === 0) {
+                        showError('personnel', '请添加至少一名人员');
+                    }
+                };
+                
+                item.appendChild(text);
+                item.appendChild(removeBtn);
+                personnelList.appendChild(item);
+            });
+        } else {
+            personnelList.style.display = 'none';
+        }
+    }
+    
+    // 显示错误提示
+    function showError(fieldId, message) {
+        const errorElement = document.getElementById(`${fieldId}-error`);
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            // 为对应的输入框添加错误样式
+            const inputElement = document.getElementById(fieldId);
+            if (inputElement) {
+                inputElement.classList.add('input-error');
+            }
+        }
+    }
+    
+    // 隐藏错误提示
+    function hideError(fieldId) {
+        const errorElement = document.getElementById(`${fieldId}-error`);
+        if (errorElement) {
+            errorElement.style.display = 'none';
+            
+            // 移除对应输入框的错误样式
+            const inputElement = document.getElementById(fieldId);
+            if (inputElement) {
+                inputElement.classList.remove('input-error');
+            }
+        }
+    }
+    
+    // 显示模态框
+    function showModal(message) {
+        document.getElementById('errorModalBody').textContent = message;
+        document.getElementById('errorModal').style.display = 'block';
+    }
+    
+    // 关闭模态框
+    document.getElementById('closeModal').addEventListener('click', function() {
+        document.getElementById('errorModal').style.display = 'none';
+    });
+    
+    // 点击模态框外部关闭
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('errorModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    // 场景类型切换逻辑
+    document.getElementById('scenarioType').addEventListener('change', function() {
+        const scenarioType = this.value;
+        const themeScenarioGroup = document.getElementById('themeScenarioGroup');
+        const listScenarioGroup = document.getElementById('listScenarioGroup');
+        
+        // 隐藏所有场景子选项
+        themeScenarioGroup.style.display = 'none';
+        listScenarioGroup.style.display = 'none';
+        
+        // 根据选择显示对应的子选项
+        if (scenarioType === '主题场景') {
+            themeScenarioGroup.style.display = 'block';
+        } else if (scenarioType === '指定清单场景') {
+            listScenarioGroup.style.display = 'block';
+        }
+    });
+    
+    // 验证表单
+    function validateForm() {
+        let isValid = true;
+        let emptyFields = [];
+        
+        // 验证网格名称
+        const gridName = document.getElementById('gridName').value.trim();
+        if (!gridName) {
+            showError('gridName', '请输入网格名称');
+            isValid = false;
+            emptyFields.push('网格名称');
+        } else {
+            hideError('gridName');
+        }
+        
+        // 验证场景类型
+        const scenarioType = document.getElementById('scenarioType').value;
+        if (!scenarioType) {
+            showError('scenarioType', '请选择场景类型');
+            isValid = false;
+            emptyFields.push('场景类型');
+        } else {
+            hideError('scenarioType');
+            
+            // 根据场景类型验证子选项
+            if (scenarioType === '主题场景') {
+                const themeScenario = document.getElementById('themeScenario').value;
+                if (!themeScenario) {
+                    showError('themeScenario', '请选择主题场景类型');
+                    isValid = false;
+                    emptyFields.push('主题场景类型');
+                } else {
+                    hideError('themeScenario');
+                }
+            } else if (scenarioType === '指定清单场景') {
+                const listScenario = document.getElementById('listScenario').value;
+                if (!listScenario) {
+                    showError('listScenario', '请选择指定清单场景类型');
+                    isValid = false;
+                    emptyFields.push('指定清单场景类型');
+                } else {
+                    hideError('listScenario');
+                }
+            }
+        }
+        
+        // 删除或注释掉这段代码，因为不再需要验证 activityScenario
+        /*
+        // 验证场景
+        const activityScenario = document.getElementById('activityScenario').value.trim();
+        if (!activityScenario) {
+            showError('activityScenario', '请输入场景');
+            isValid = false;
+            emptyFields.push('促销/拜访类型的场景');
+        } else {
+            hideError('activityScenario');
+        }
+        */
+        
+        // 验证时间
+        const time = document.getElementById('time').value;
+        if (!time) {
+            showError('time', '请选择时间');
+            isValid = false;
+            emptyFields.push('促销/拜访时间');
+        } else {
+            hideError('time');
+        }
+        
+        // 验证地点
+        const location = document.getElementById('location').value.trim();
+        if (!location) {
+            showError('location', '请输入地点');
+            isValid = false;
+            emptyFields.push('促销/拜访地点');
+        } else {
+            hideError('location');
+        }
+        
+        // 验证人员
+        if (personnelArray.length === 0) {
+            showError('personnel', '请添加至少一名人员');
+            isValid = false;
+            emptyFields.push('促销/拜访人员');
+        } else {
+            hideError('personnel');
+        }
+        
+        // 验证业务
+        const business = document.getElementById('business').value.trim();
+        if (!business) {
+            showError('business', '请输入成交业务');
+            isValid = false;
+            emptyFields.push('促销/拜访成交业务');
+        } else {
+            hideError('business');
+        }
+        
+        // 验证效果
+        const effect = document.getElementById('effect').value.trim();
+        if (!effect) {
+            showError('effect', '请输入促销/拜访效果');
+            isValid = false;
+            emptyFields.push('促销/拜访效果');
+        } else {
+            hideError('effect');
+        }
+        
+        // 如果验证失败，显示模态框
+        if (!isValid) {
+            const message = `以下项目未填写：\n${emptyFields.join('\n')}`;
+            showModal(message);
+        }
+        
+        return isValid;
+    }
+    
+    // 为所有输入框添加输入事件监听，在输入时隐藏错误提示
+    document.querySelectorAll('input, textarea, select').forEach(element => {
+        element.addEventListener('input', function() {
+            const id = this.id;
+            if (id) {
+                hideError(id);
+            }
+        });
+    });
+    
+    // 生成结果文本
+    document.getElementById('generateBtn').addEventListener('click', function() {
+        if (validateForm()) {
+            const gridName = document.getElementById('gridName').value.trim();
+            const scenarioType = document.getElementById('scenarioType').value;
+            let scenarioDetail = '';
+            
+            if (scenarioType === '主题场景') {
+                scenarioDetail = document.getElementById('themeScenario').value;
+            } else if (scenarioType === '指定清单场景') {
+                scenarioDetail = document.getElementById('listScenario').value;
+            }
+            
+            const activityType = document.getElementById('activityType').value;
+            const time = document.getElementById('time').value;
+            const location = document.getElementById('location').value.trim();
+            const business = document.getElementById('business').value.trim();
+            const effect = document.getElementById('effect').value.trim();
+            const isProperty = document.getElementById('isProperty').value;
+            const isEnterpriseGroup = document.getElementById('isEnterpriseGroup').value;
+            
+            // 格式化日期
+            const formattedDate = formatDate(time);
+            
+            // 格式化人员信息
+            let personnelText = '';
+            personnelArray.forEach(person => {
+                personnelText += `${person.position}${person.name} `;
+            });
+            
+            // 生成结果文本
+            let resultText = `【${gridName}-${scenarioType}：${scenarioDetail} ${activityType}】\n`;
+            resultText += `1、${activityType}/拜访时间：${formattedDate}\n`;
+            resultText += `2、${activityType}/拜访地点：${location}\n`;
+            resultText += `3、${activityType}/拜访人员：${personnelText}\n`;
+            resultText += `4、${activityType}/拜访成交业务：${business}\n`;
+            resultText += `5、${activityType}/拜访效果：${effect}\n`;
+            resultText += `6、走访集团是否物业类：${isProperty}\n`;
+            resultText += `7、走访集团是否企宽集团：${isEnterpriseGroup}`;
+            
+            // 显示结果
+            document.getElementById('resultText').textContent = resultText;
+            document.getElementById('resultContainer').style.display = 'block';
+        }
+    });
+    
+    // 格式化日期函数
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        
+        return `${year}年${month}月${day}日`;
+    }
+    
+    document.getElementById('copyBtn').addEventListener('click', function() {
+        const resultText = document.getElementById('resultText').textContent;
+        
+        // 复制到剪贴板
+        navigator.clipboard.writeText(resultText).then(function() {
+            alert('已复制到剪贴板！');
+        }).catch(function(err) {
+            alert('复制失败，请手动复制：' + err);
+        });
+    });
