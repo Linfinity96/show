@@ -209,3 +209,31 @@ button:active {
 .close-modal:hover {
     background-color: #5a6268;
 }
+/* 添加到CSS文件中 */
+.grid-company-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.select-group {
+    flex: 1;
+    min-width: 0;
+}
+
+.select-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.select-group select {
+    width: 100%;
+}
+
+/* 在小屏幕上改为垂直布局 */
+@media (max-width: 768px) {
+    .grid-company-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

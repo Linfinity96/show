@@ -134,10 +134,20 @@
         let isValid = true;
         let emptyFields = [];
         
+        // 验证分公司
+        const company = document.getElementById('company').value;
+        if (!company) {
+            showError('company', '请选择分公司');
+            isValid = false;
+            emptyFields.push('分公司');
+        } else {
+            hideError('company');
+        }
+        
         // 验证网格名称
-        const gridName = document.getElementById('gridName').value.trim();
+        const gridName = document.getElementById('gridName').value;
         if (!gridName) {
-            showError('gridName', '请输入网格名称');
+            showError('gridName', '请选择网格名称');
             isValid = false;
             emptyFields.push('网格名称');
         } else {
@@ -246,6 +256,153 @@
         return isValid;
     }
     
+    // 在validateForm函数中添加验证逻辑
+    function validateForm() {
+        let isValid = true;
+        let emptyFields = [];
+        
+        // 验证分公司
+        const company = document.getElementById('company').value;
+        if (!company) {
+            showError('company', '请选择分公司');
+            isValid = false;
+            emptyFields.push('分公司');
+        } else {
+            hideError('company');
+        }
+        
+        // 验证网格名称
+        const gridName = document.getElementById('gridName').value;
+        if (!gridName) {
+            showError('gridName', '请选择网格名称');
+            isValid = false;
+            emptyFields.push('网格名称');
+        } else {
+            hideError('gridName');
+        }
+        
+        // 验证场景类型
+        const scenarioType = document.getElementById('scenarioType').value;
+        if (!scenarioType) {
+            showError('scenarioType', '请选择场景类型');
+            isValid = false;
+            emptyFields.push('场景类型');
+        } else {
+            hideError('scenarioType');
+            
+            // 根据场景类型验证子选项
+            if (scenarioType === '主题场景') {
+                const themeScenario = document.getElementById('themeScenario').value;
+                if (!themeScenario) {
+                    showError('themeScenario', '请选择主题场景类型');
+                    isValid = false;
+                    emptyFields.push('主题场景类型');
+                } else {
+                    hideError('themeScenario');
+                }
+            } else if (scenarioType === '指定清单场景') {
+                const listScenario = document.getElementById('listScenario').value;
+                if (!listScenario) {
+                    showError('listScenario', '请选择指定清单场景类型');
+                    isValid = false;
+                    emptyFields.push('指定清单场景类型');
+                } else {
+                    hideError('listScenario');
+                }
+            }
+        }
+        
+        // 删除或注释掉这段代码，因为不再需要验证 activityScenario
+        /*
+        // 验证场景
+        const activityScenario = document.getElementById('activityScenario').value.trim();
+        if (!activityScenario) {
+            showError('activityScenario', '请输入场景');
+            isValid = false;
+            emptyFields.push('促销/拜访类型的场景');
+        } else {
+            hideError('activityScenario');
+        }
+        */
+        
+        // 验证时间
+        const time = document.getElementById('time').value;
+        if (!time) {
+            showError('time', '请选择时间');
+            isValid = false;
+            emptyFields.push('促销/拜访时间');
+        } else {
+            hideError('time');
+        }
+        
+        // 验证地点
+        const location = document.getElementById('location').value.trim();
+        if (!location) {
+            showError('location', '请输入地点');
+            isValid = false;
+            emptyFields.push('促销/拜访地点');
+        } else {
+            hideError('location');
+        }
+        
+        // 验证人员
+        if (personnelArray.length === 0) {
+            showError('personnel', '请添加至少一名人员');
+            isValid = false;
+            emptyFields.push('促销/拜访人员');
+        } else {
+            hideError('personnel');
+        }
+        
+        // 验证业务
+        const business = document.getElementById('business').value.trim();
+        if (!business) {
+            showError('business', '请输入成交业务');
+            isValid = false;
+            emptyFields.push('促销/拜访成交业务');
+        } else {
+            hideError('business');
+        }
+        
+        // 验证效果
+        const effect = document.getElementById('effect').value.trim();
+        if (!effect) {
+            showError('effect', '请输入促销/拜访效果');
+            isValid = false;
+            emptyFields.push('促销/拜访效果');
+        } else {
+            hideError('effect');
+        }
+        
+        // 验证是否物业类集团
+        const isProperty = document.getElementById('isProperty').value;
+        if (!isProperty) {
+            showError('isProperty', '如果走访地点包含物业，选填：是');
+            isValid = false;
+            emptyFields.push('是否物业类集团');
+        } else {
+            hideError('isProperty');
+        }
+        
+        // 验证是否企宽集团
+        const isEnterpriseGroup = document.getElementById('isEnterpriseGroup').value;
+        if (!isEnterpriseGroup) {
+            showError('isEnterpriseGroup', '如果走访地点包含企业集团，选填：是');
+            isValid = false;
+            emptyFields.push('是否企宽集团');
+        } else {
+            hideError('isEnterpriseGroup');
+        }
+        
+        // 如果验证失败，显示模态框
+        if (!isValid) {
+            const message = `以下项目未填写：\n${emptyFields.join('\n')}`;
+            showModal(message);
+        }
+        
+        return isValid;
+    }
+    
     // 为所有输入框添加输入事件监听，在输入时隐藏错误提示
     document.querySelectorAll('input, textarea, select').forEach(element => {
         element.addEventListener('input', function() {
@@ -324,3 +481,49 @@
             alert('复制失败，请手动复制：' + err);
         });
     });
+    
+    // 添加在文件开头
+    // 网格数据
+    const gridData = {
+        "江城分公司": ["城南网格", "东风三网格", "东门网格", "建设路网格", "石湾网格"],
+        "阳春分公司": ["河西网格", "城北网格", "春湾网格", "合水网格", "潭水网格", "三甲网格", "城云网格", "朝南网格"],
+        "阳东分公司": ["合山网格", "东城网格", "北惯网格", "红丰网格", "东平网格", "昌和网格"],
+        "阳西分公司": ["溪头网格", "儒洞网格", "金湖湾网格", "东湖网格", "人道网格"],
+        "南区分公司": ["白沙网格", "沿江路网格", "金源路网格", "平岗网格"]
+    };
+    
+    // 更新网格选项
+    function updateGridOptions() {
+        
+        const companySelect = document.getElementById('company');
+        const gridSelect = document.getElementById('gridName');
+        
+        // 清空当前网格选项
+        gridSelect.innerHTML = '';
+        
+        // 获取选中的分公司
+        const selectedCompany = companySelect.value;
+        
+        // 添加默认选项
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        
+        if (!selectedCompany) {
+            defaultOption.textContent = '请先选择分公司';
+            gridSelect.appendChild(defaultOption);
+            return;
+        }
+        
+        defaultOption.textContent = '请选择网格';
+        gridSelect.appendChild(defaultOption);
+        console.log(selectedCompany)
+        
+        // 添加对应分公司的网格选项
+        const grids = gridData[selectedCompany] || [];
+        grids.forEach(grid => {
+            const option = document.createElement('option');
+            option.value = grid;
+            option.textContent = grid;
+            gridSelect.appendChild(option);
+        });
+    }

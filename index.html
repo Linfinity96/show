@@ -15,46 +15,64 @@
         <div class="form-container">
             <div class="form-section">
                 <div class="form-section-title">基本信息</div>
-                <div class="form-group">
-                    <label for="gridName">网格名称：</label>
-                    <input type="text" id="gridName" placeholder="例如：潭水网格">
-                    <div class="error-message" id="gridName-error">请输入网格名称</div>
+                <div class="form-group grid-company-row">
+                    <div class="select-group">
+                        <label for="company">分公司：</label>
+                        <select id="company" onchange="updateGridOptions()">
+                            <option value="">请选择分公司</option>
+                            <option value="江城分公司">江城分公司</option>
+                            <option value="阳春分公司">阳春分公司</option>
+                            <option value="阳东分公司">阳东分公司</option>
+                            <option value="阳西分公司">阳西分公司</option>
+                            <option value="南区分公司">南区分公司</option>
+                        </select>
+                        <div class="error-message" id="company-error">请选择分公司</div>
+                    </div>
+                    
+                    <div class="select-group">
+                        <label for="gridName">网格名称：</label>
+                        <select id="gridName">
+                            <option value="">请先选择分公司</option>
+                        </select>
+                        <div class="error-message" id="gridName-error">请选择网格名称</div>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label for="scenarioType">场景选择：</label>
-                    <select id="scenarioType">
-                        <option value="">请选择场景类型</option>
-                        <option value="主题场景">主题场景</option>
-                        <option value="指定清单场景">指定清单场景</option>
-                    </select>
-                    <div class="error-message" id="scenarioType-error">请选择场景类型</div>
-                </div>
-                
-                <div class="form-group" id="themeScenarioGroup" style="display: none;">
-                    <label for="themeScenario">主题场景类型：</label>
-                    <select id="themeScenario">
-                        <option value="">请选择主题场景类型</option>
-                        <option value="大集团">大集团</option>
-                        <option value="酒店">酒店</option>
-                        <option value="幼儿园">幼儿园</option>
-                        <option value="商圈">商圈</option>
-                        <option value="大型社区">大型社区</option>
-                    </select>
-                    <div class="error-message" id="themeScenario-error">请选择主题场景类型</div>
-                </div>
-                
-                <div class="form-group" id="listScenarioGroup" style="display: none;">
-                    <label for="listScenario">指定清单场景类型：</label>
-                    <select id="listScenario">
-                        <option value="">请选择指定清单场景类型</option>
-                        <option value="重点小区">重点小区</option>
-                        <option value="漫入社区">漫入社区</option>
-                        <option value="重点集团">重点集团</option>
-                        <option value="百万集团">百万集团</option>
-                        <option value="乡村">乡村</option>
-                    </select>
-                    <div class="error-message" id="listScenario-error">请选择指定清单场景类型</div>
+                <div class="form-group grid-company-row">
+                    <div class="select-group">
+                        <label for="scenarioType">场景选择：</label>
+                        <select id="scenarioType">
+                            <option value="">请选择场景类型</option>
+                            <option value="主题场景">主题场景</option>
+                            <option value="指定清单场景">指定清单场景</option>
+                        </select>
+                        <div class="error-message" id="scenarioType-error">请选择场景类型</div>
+                    </div>
+                    
+                    <div class="select-group" id="themeScenarioGroup" style="display: none;">
+                        <label for="themeScenario">主题场景类型：</label>
+                        <select id="themeScenario">
+                            <option value="">请选择主题场景类型</option>
+                            <option value="大集团">大集团</option>
+                            <option value="酒店">酒店</option>
+                            <option value="幼儿园">幼儿园</option>
+                            <option value="商圈">商圈</option>
+                            <option value="大型社区">大型社区</option>
+                        </select>
+                        <div class="error-message" id="themeScenario-error">请选择主题场景类型</div>
+                    </div>
+                    
+                    <div class="select-group" id="listScenarioGroup" style="display: none;">
+                        <label for="listScenario">指定清单场景类型：</label>
+                        <select id="listScenario">
+                            <option value="">请选择指定清单场景类型</option>
+                            <option value="重点小区">重点小区</option>
+                            <option value="漫入社区">漫入社区</option>
+                            <option value="重点集团">重点集团</option>
+                            <option value="百万集团">百万集团</option>
+                            <option value="乡村">乡村</option>
+                        </select>
+                        <div class="error-message" id="listScenario-error">请选择指定清单场景类型</div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -113,19 +131,23 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="isProperty">是否物业类：</label>
+                    <label for="isProperty">是否物业类集团：</label>
                     <select id="isProperty">
+                        <option value="">请选择</option>
                         <option value="是">是</option>
                         <option value="否">否</option>
                     </select>
+                    <div class="error-message" id="isProperty-error">如果走访地点包含物业，选填：是</div>
                 </div>
                 
                 <div class="form-group">
                     <label for="isEnterpriseGroup">是否企宽集团：</label>
                     <select id="isEnterpriseGroup">
+                        <option value="">请选择</option>
                         <option value="是">是</option>
                         <option value="否">否</option>
                     </select>
+                    <div class="error-message" id="isEnterpriseGroup-error">如果走访地点包含企业集团，选填：是</div>
                 </div>
             </div>
             
