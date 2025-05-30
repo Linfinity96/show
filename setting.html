@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>晒单信息生成器 - 设置</title>
+    <link rel="stylesheet" href="./show.css">
+    <style>
+        .setting-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .setting-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            
+        }
+        .back-btn {
+            position: absolute;
+            right: 0;
+            top: 30%;
+            transform: translateY(-50%);
+            background-color: #6c757d;
+            padding: 6px 12px;
+            font-size: 14px;
+            
+        }
+        .scenario-container {
+            margin-bottom: 25px;
+        }
+        .scenario-list {
+            border: 1px solid #cce0ff;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #f9fcff;
+        }
+        .scenario-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 8px; /* 减小上下内边距 */
+            border-bottom: 1px solid #e6f2ff;
+            height: 32px; /* 固定高度 */
+        }
+        .scenario-item:last-child {
+            border-bottom: none;
+        }
+        .scenario-item span {
+            flex: 1;
+        }
+        .remove-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+            height: 24px; /* 固定高度 */
+            width: 50px; /* 固定宽度 */
+            text-align: center;
+            line-height: 18px;
+        }
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+        .add-scenario-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            align-items: center; /* 确保垂直对齐 */
+        }
+        .add-scenario-container input {
+            flex: 1;
+            height: 34px; /* 减小高度 */
+        }
+        .add-scenario-container .add-btn {
+            height: 34px; /* 与输入框高度一致 */
+            padding: 0 10px;
+            margin: 0;
+        }
+        .save-btn {
+            margin-top: 25px;
+        }
+        h2 {
+            font-size: 18px;
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container setting-container">
+        <div class="setting-header">
+            <button class="back-btn" onclick="window.location.href='index.html'">返回主页</button>
+            <h1>场景类型设置</h1>
+           
+        </div>
+        
+        <div class="scenario-container">
+            <h2>主题场景类型</h2>
+            <div id="themeScenarioList" class="scenario-list">
+                <!-- 主题场景列表将在这里动态生成 -->
+            </div>
+            <div class="add-scenario-container">
+                <input type="text" id="newThemeScenario" placeholder="输入新的主题场景类型">
+                <button class="add-btn" id="addThemeScenarioBtn">添加</button>
+            </div>
+        </div>
+        
+        <div class="scenario-container">
+            <h2>指定清单场景类型</h2>
+            <div id="listScenarioList" class="scenario-list">
+                <!-- 指定清单场景列表将在这里动态生成 -->
+            </div>
+            <div class="add-scenario-container">
+                <input type="text" id="newListScenario" placeholder="输入新的指定清单场景类型">
+                <button class="add-btn" id="addListScenarioBtn">添加</button>
+            </div>
+        </div>
+        
+        <button id="saveSettingsBtn" class="save-btn">保存设置</button>
+    </div>
+    
+    <!-- 错误提示模态框 -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                提示
+            </div>
+            <div class="modal-body" id="errorModalBody">
+                请填写场景类型
+            </div>
+            <div class="modal-footer">
+                <button class="close-modal" id="closeModal">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 密码验证模态框 -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                权限验证
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="passwordInput">请输入权限密码：</label>
+                    <input type="password" id="passwordInput" class="password-input">
+                    <div class="error-message" id="password-error" style="display: none;">密码错误，无权限访问</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="close-modal" id="cancelPassword">取消</button>
+                <button class="confirm-btn" id="confirmPassword">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 从localStorage加载场景类型数据
+        let themeScenarios = JSON.parse(localStorage.getItem('themeScenarios')) || [
+            "大集团", "酒店", "幼儿园", "商圈", "大型社区"
+        ];
+        
+        let listScenarios = JSON.parse(localStorage.getItem('listScenarios')) || [
+            "重点小区", "漫入社区", "重点集团", "百万集团", "乡村"
+        ];
+        
+        // 更新主题场景列表显示
+        function updateThemeScenarioList() {
+            const themeScenarioList = document.getElementById('themeScenarioList');
+            themeScenarioList.innerHTML = '';
+            
+            themeScenarios.forEach((scenario, index) => {
+                const item = document.createElement('div');
+                item.className = 'scenario-item';
+                
+                const text = document.createElement('span');
+                text.textContent = scenario;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-btn';
+                removeBtn.textContent = '删除';
+                removeBtn.onclick = function() {
+                    themeScenarios.splice(index, 1);
+                    updateThemeScenarioList();
+                };
+                
+                item.appendChild(text);
+                item.appendChild(removeBtn);
+                themeScenarioList.appendChild(item);
+            });
+        }
+        
+        // 更新指定清单场景列表显示
+        function updateListScenarioList() {
+            const listScenarioList = document.getElementById('listScenarioList');
+            listScenarioList.innerHTML = '';
+            
+            listScenarios.forEach((scenario, index) => {
+                const item = document.createElement('div');
+                item.className = 'scenario-item';
+                
+                const text = document.createElement('span');
+                text.textContent = scenario;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-btn';
+                removeBtn.textContent = '删除';
+                removeBtn.onclick = function() {
+                    listScenarios.splice(index, 1);
+                    updateListScenarioList();
+                };
+                
+                item.appendChild(text);
+                item.appendChild(removeBtn);
+                listScenarioList.appendChild(item);
+            });
+        }
+        
+        // 添加主题场景
+        document.getElementById('addThemeScenarioBtn').addEventListener('click', function() {
+            const newScenario = document.getElementById('newThemeScenario').value.trim();
+            
+            if (newScenario) {
+                themeScenarios.push(newScenario);
+                updateThemeScenarioList();
+                document.getElementById('newThemeScenario').value = '';
+            } else {
+                showModal('请输入场景类型');
+            }
+        });
+        
+        // 添加指定清单场景
+        document.getElementById('addListScenarioBtn').addEventListener('click', function() {
+            const newScenario = document.getElementById('newListScenario').value.trim();
+            
+            if (newScenario) {
+                listScenarios.push(newScenario);
+                updateListScenarioList();
+                document.getElementById('newListScenario').value = '';
+            } else {
+                showModal('请输入场景类型');
+            }
+        });
+        
+        // 保存设置
+        document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+            showPasswordModal();
+        });
+        
+        // 显示模态框
+        function showModal(message) {
+            document.getElementById('errorModalBody').textContent = message;
+            document.getElementById('errorModal').style.display = 'block';
+        }
+        
+        // 关闭模态框
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('errorModal').style.display = 'none';
+        });
+        
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('errorModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+            
+            const passwordModal = document.getElementById('passwordModal');
+            if (event.target === passwordModal) {
+                passwordModal.style.display = 'none';
+            }
+        });
+        
+        // MD5加密函数
+        async function md5(message) {
+            // 将字符串转换为UTF-8编码的ArrayBuffer
+            const msgBuffer = new TextEncoder().encode(message);
+            // 使用SubtleCrypto API计算哈希值
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            // 将ArrayBuffer转换为十六进制字符串
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+        
+        // 显示密码验证模态框
+        function showPasswordModal() {
+            document.getElementById('passwordModal').style.display = 'block';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('password-error').style.display = 'none';
+        }
+        
+        // 关闭密码验证模态框
+        document.getElementById('cancelPassword').addEventListener('click', function() {
+            document.getElementById('passwordModal').style.display = 'none';
+        });
+        
+        // 验证密码并保存设置
+        document.getElementById('confirmPassword').addEventListener('click', async function() {
+            const password = document.getElementById('passwordInput').value;
+           
+            // 正确密码的SHA-256哈希值
+            const correctPasswordHash = 'e9300549df9994f1f311fa42304d8017d88149e1f8ab583394edb714934eb3d3';
+            
+            // 计算输入密码的哈希值
+            const passwordHash = await md5(password);
+            
+            if (passwordHash === correctPasswordHash) {
+                // 密码正确，保存设置
+                localStorage.setItem('themeScenarios', JSON.stringify(themeScenarios));
+                localStorage.setItem('listScenarios', JSON.stringify(listScenarios));
+                document.getElementById('passwordModal').style.display = 'none';
+                showModal('设置已保存');
+            } else {
+                // 密码错误，显示错误信息
+                document.getElementById('password-error').style.display = 'block';
+            }
+        });
+        
+        // 密码输入框回车事件
+        document.getElementById('passwordInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                document.getElementById('confirmPassword').click();
+            }
+        });
+        
+        // 初始化显示
+        updateThemeScenarioList();
+        updateListScenarioList();
+    </script>
+</body>
+</html>

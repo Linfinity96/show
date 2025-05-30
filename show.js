@@ -445,11 +445,11 @@
             
             // 生成结果文本
             let resultText = `【${gridName}-${scenarioType}：${scenarioDetail} ${activityType}】\n`;
-            resultText += `1、${activityType}/拜访时间：${formattedDate}\n`;
-            resultText += `2、${activityType}/拜访地点：${location}\n`;
-            resultText += `3、${activityType}/拜访人员：${personnelText}\n`;
-            resultText += `4、${activityType}/拜访成交业务：${business}\n`;
-            resultText += `5、${activityType}/拜访效果：${effect}\n`;
+            resultText += `1、${activityType}时间：${formattedDate}\n`;
+            resultText += `2、${activityType}地点：${location}\n`;
+            resultText += `3、${activityType}人员：${personnelText}\n`;
+            resultText += `4、${activityType}成交业务：${business}\n`;
+            resultText += `5、${activityType}效果：${effect}\n`;
             resultText += `6、走访集团是否物业类：${isProperty}\n`;
             resultText += `7、走访集团是否企宽集团：${isEnterpriseGroup}`;
             
@@ -474,13 +474,54 @@
     document.getElementById('copyBtn').addEventListener('click', function() {
         const resultText = document.getElementById('resultText').textContent;
         
-        // 复制到剪贴板
-        navigator.clipboard.writeText(resultText).then(function() {
-            alert('已复制到剪贴板！');
-        }).catch(function(err) {
-            alert('复制失败，请手动复制：' + err);
-        });
+        // 兼容性更好的复制到剪贴板方法
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            // 现代浏览器API
+            navigator.clipboard.writeText(resultText).then(function() {
+                alert('已复制到剪贴板！');
+            }).catch(function(err) {
+                fallbackCopyTextToClipboard(resultText);
+            });
+        } else {
+            // 回退方法
+            fallbackCopyTextToClipboard(resultText);
+        }
     });
+    
+    // 添加回退复制方法
+    function fallbackCopyTextToClipboard(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        
+        // 设置样式使文本域不可见
+        textArea.style.position = "fixed";
+        textArea.style.top = 0;
+        textArea.style.left = 0;
+        textArea.style.width = "2em";
+        textArea.style.height = "2em";
+        textArea.style.padding = 0;
+        textArea.style.border = "none";
+        textArea.style.outline = "none";
+        textArea.style.boxShadow = "none";
+        textArea.style.background = "transparent";
+        
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                alert('已复制到剪贴板！');
+            } else {
+                alert('复制失败，请手动复制');
+            }
+        } catch (err) {
+            alert('复制失败，请手动复制：' + err);
+        }
+        
+        document.body.removeChild(textArea);
+    }
     
     // 添加在文件开头
     // 网格数据
@@ -527,3 +568,101 @@
             gridSelect.appendChild(option);
         });
     }
+
+// 在文件开头添加
+// 从localStorage加载场景类型数据
+function loadScenarioOptions() {
+    // 加载主题场景类型
+    const themeScenarioSelect = document.getElementById('themeScenario');
+    const themeScenarios = JSON.parse(localStorage.getItem('themeScenarios')) || [
+        "大集团", "酒店", "幼儿园", "商圈", "大型社区"
+    ];
+    
+    // 清空当前选项（保留第一个默认选项）
+    while (themeScenarioSelect.options.length > 1) {
+        themeScenarioSelect.remove(1);
+    }
+    
+    // 添加场景类型选项
+    themeScenarios.forEach(scenario => {
+        const option = document.createElement('option');
+        option.value = scenario;
+        option.textContent = scenario;
+        themeScenarioSelect.appendChild(option);
+    });
+    
+    // 加载指定清单场景类型
+    const listScenarioSelect = document.getElementById('listScenario');
+    const listScenarios = JSON.parse(localStorage.getItem('listScenarios')) || [
+        "重点小区", "漫入社区", "重点集团", "百万集团", "乡村"
+    ];
+    
+    // 清空当前选项（保留第一个默认选项）
+    while (listScenarioSelect.options.length > 1) {
+        listScenarioSelect.remove(1);
+    }
+    
+    // 添加场景类型选项
+    listScenarios.forEach(scenario => {
+        const option = document.createElement('option');
+        option.value = scenario;
+        option.textContent = scenario;
+        listScenarioSelect.appendChild(option);
+    });
+}
+
+// 在文件末尾添加，确保在页面加载完成后执行
+document.addEventListener('DOMContentLoaded', function() {
+    // 加载场景类型选项
+    loadScenarioOptions();
+});
+
+    // MD5加密函数
+    async function md5(message) {
+        // 将字符串转换为UTF-8编码的ArrayBuffer
+        const msgBuffer = new TextEncoder().encode(message);
+        // 使用SubtleCrypto API计算哈希值
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        // 将ArrayBuffer转换为十六进制字符串
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+    }
+    
+    // 显示密码验证模态框
+    function showPasswordModal() {
+        document.getElementById('passwordModal').style.display = 'block';
+        document.getElementById('passwordInput').value = '';
+        document.getElementById('password-error').style.display = 'none';
+    }
+    
+    // 关闭密码验证模态框
+    document.getElementById('cancelPassword').addEventListener('click', function() {
+        document.getElementById('passwordModal').style.display = 'none';
+    });
+    
+    // 验证密码并跳转
+    document.getElementById('confirmPassword').addEventListener('click', async function() {
+        const password = document.getElementById('passwordInput').value;
+       
+        // 正确密码的SHA-256哈希值
+        const correctPasswordHash = 'e9300549df9994f1f311fa42304d8017d88149e1f8ab583394edb714934eb3d3';
+        
+        // 计算输入密码的哈希值
+        const passwordHash = await md5(password);
+        console.log(passwordHash);
+        if (passwordHash === correctPasswordHash) {
+            // 密码正确，跳转到设置页面
+            window.location.href = 'setting.html';
+        } else {
+            // 密码错误，显示错误信息
+            document.getElementById('password-error').style.display = 'block';
+        }
+    });
+    
+    // 密码输入框回车事件
+    document.getElementById('passwordInput').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            document.getElementById('confirmPassword').click();
+        }
+    });
