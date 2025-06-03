@@ -113,12 +113,12 @@
         </div>
         
         <div class="scenario-container">
-            <h2>指定清单场景类型</h2>
+            <h2>主题外常规场景类型</h2>
             <div id="listScenarioList" class="scenario-list">
-                <!-- 指定清单场景列表将在这里动态生成 -->
+                <!-- 主题外常规场景列表将在这里动态生成 -->
             </div>
             <div class="add-scenario-container">
-                <input type="text" id="newListScenario" placeholder="输入新的指定清单场景类型">
+                <input type="text" id="newListScenario" placeholder="输入新的主题外常规场景类型">
                 <button class="add-btn" id="addListScenarioBtn">添加</button>
             </div>
         </div>
@@ -164,11 +164,11 @@
     <script>
         // 从localStorage加载场景类型数据
         let themeScenarios = JSON.parse(localStorage.getItem('themeScenarios')) || [
-            "大集团", "酒店", "幼儿园", "商圈", "大型社区"
+            "重点集团", "旅行社", "学校", "年轻人聚集场所"
         ];
         
         let listScenarios = JSON.parse(localStorage.getItem('listScenarios')) || [
-            "重点小区", "漫入社区", "重点集团", "百万集团", "乡村"
+            "大型社区"
         ];
         
         // 更新主题场景列表显示
@@ -197,7 +197,7 @@
             });
         }
         
-        // 更新指定清单场景列表显示
+        // 更新主题外常规场景列表显示
         function updateListScenarioList() {
             const listScenarioList = document.getElementById('listScenarioList');
             listScenarioList.innerHTML = '';
@@ -236,7 +236,7 @@
             }
         });
         
-        // 添加指定清单场景
+        // 添加主题外常规场景
         document.getElementById('addListScenarioBtn').addEventListener('click', function() {
             const newScenario = document.getElementById('newListScenario').value.trim();
             

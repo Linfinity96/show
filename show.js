@@ -124,7 +124,7 @@
         // 根据选择显示对应的子选项
         if (scenarioType === '主题场景') {
             themeScenarioGroup.style.display = 'block';
-        } else if (scenarioType === '指定清单场景') {
+        } else if (scenarioType === '主题外常规场景') {
             listScenarioGroup.style.display = 'block';
         }
     });
@@ -173,12 +173,12 @@
                 } else {
                     hideError('themeScenario');
                 }
-            } else if (scenarioType === '指定清单场景') {
+            } else if (scenarioType === '主题外常规场景') {
                 const listScenario = document.getElementById('listScenario').value;
                 if (!listScenario) {
-                    showError('listScenario', '请选择指定清单场景类型');
+                    showError('listScenario', '请选择主题外常规场景类型');
                     isValid = false;
-                    emptyFields.push('指定清单场景类型');
+                    emptyFields.push('主题外常规场景类型');
                 } else {
                     hideError('listScenario');
                 }
@@ -300,12 +300,12 @@
                 } else {
                     hideError('themeScenario');
                 }
-            } else if (scenarioType === '指定清单场景') {
+            } else if (scenarioType === '主题外常规场景') {
                 const listScenario = document.getElementById('listScenario').value;
                 if (!listScenario) {
-                    showError('listScenario', '请选择指定清单场景类型');
+                    showError('listScenario', '请选择主题外常规场景类型');
                     isValid = false;
-                    emptyFields.push('指定清单场景类型');
+                    emptyFields.push('主题外常规场景类型');
                 } else {
                     hideError('listScenario');
                 }
@@ -422,7 +422,7 @@
             
             if (scenarioType === '主题场景') {
                 scenarioDetail = document.getElementById('themeScenario').value;
-            } else if (scenarioType === '指定清单场景') {
+            } else if (scenarioType === '主题外常规场景') {
                 scenarioDetail = document.getElementById('listScenario').value;
             }
             
@@ -575,7 +575,7 @@ function loadScenarioOptions() {
     // 加载主题场景类型
     const themeScenarioSelect = document.getElementById('themeScenario');
     const themeScenarios = JSON.parse(localStorage.getItem('themeScenarios')) || [
-        "大集团", "酒店", "幼儿园", "商圈", "大型社区"
+        "重点集团", "旅行社", "学校", "年轻人聚集场所"
     ];
     
     // 清空当前选项（保留第一个默认选项）
@@ -591,10 +591,10 @@ function loadScenarioOptions() {
         themeScenarioSelect.appendChild(option);
     });
     
-    // 加载指定清单场景类型
+    // 加载主题外常规场景类型
     const listScenarioSelect = document.getElementById('listScenario');
     const listScenarios = JSON.parse(localStorage.getItem('listScenarios')) || [
-        "重点小区", "漫入社区", "重点集团", "百万集团", "乡村"
+        "大型社区"
     ];
     
     // 清空当前选项（保留第一个默认选项）
