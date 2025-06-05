@@ -5,13 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>晒单信息生成器</title>
     <link rel="stylesheet" href="./show.css">
- 
+    <style>
+        /* 添加额外的样式确保场景选择框布局正确 */
+        .scenario-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .scenario-row .select-group {
+            flex: 1;
+            min-width: 200px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="header-icon">📱</div>
         <div class="header-container">
-            <!-- <button class="settings-btn" onclick="showPasswordModal()">设置</button> -->
+            <button class="settings-btn" onclick="showPasswordModal()">设置</button>
             <h1>晒单信息生成器</h1>    
         </div>
         
@@ -40,39 +52,18 @@
                         <div class="error-message" id="gridName-error">请选择网格名称</div>
                     </div>
                 </div>
-                <div class="form-group grid-company-row">
+                
+                <!-- 修改这里，使用scenario-row类来确保场景选择框在同一行 -->
+                <div class="form-group scenario-row" id="scenarioSelectionRow">
                     <div class="select-group">
                         <label for="scenarioType">场景选择：</label>
                         <select id="scenarioType">
                             <option value="">请选择场景类型</option>
-                            <option value="主题场景">主题场景</option>
-                            <option value="主题外常规场景">主题外常规场景</option>
                         </select>
                         <div class="error-message" id="scenarioType-error">请选择场景类型</div>
                     </div>
                     
-                    <div class="select-group" id="themeScenarioGroup" style="display: none;">
-                        <label for="themeScenario">主题场景类型：</label>
-                        <select id="themeScenario">
-                            <option value="">请选择主题场景类型</option>
-                            <option value="重点集团">重点集团</option>
-                            <option value="旅行社">旅行社</option>
-                            <option value="学校">学校</option>
-                            <option value="年轻人聚集场所">年轻人聚集场所</option>
-                    
-                        </select>
-                        <div class="error-message" id="themeScenario-error">请选择主题场景类型</div>
-                    </div>
-                    
-                    <div class="select-group" id="listScenarioGroup" style="display: none;">
-                        <label for="listScenario">主题外常规场景类型：</label>
-                        <select id="listScenario">
-                            <option value="">请选择主题外常规场景类型</option>
-                            <option value="大型社区">大型社区</option>
- 
-                        </select>
-                        <div class="error-message" id="listScenario-error">请选择主题外常规场景类型</div>
-                    </div>
+                    <!-- 场景子类型选择框将由JavaScript动态生成到这个行内 -->
                 </div>
                 
                 <div class="form-group">

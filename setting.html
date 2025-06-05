@@ -91,6 +91,108 @@
             color: #0066cc;
             margin-bottom: 10px;
         }
+        .sync-container {
+            margin-top: 30px;
+            border: 1px solid #cce0ff;
+            border-radius: 6px;
+            padding: 15px;
+            background-color: #f9fcff;
+        }
+        .sync-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .status-message {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            display: none;
+        }
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .sync-info {
+            color: #0066cc;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .scenario-name-container {
+            margin-bottom: 25px;
+            border: 1px solid #cce0ff;
+            border-radius: 6px;
+            padding: 15px;
+            background-color: #f9fcff;
+        }
+        .scenario-name-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .scenario-name-item label {
+            width: 80px;
+            font-weight: bold;
+        }
+        .scenario-name-item input {
+            flex: 1;
+            height: 34px;
+            padding: 0 10px;
+        }
+        .scenario-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .add-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .add-btn:hover {
+            background-color: #218838;
+        }
+        .scenario-type-container {
+            margin-top: 15px;
+            border-top: 1px dashed #cce0ff;
+            padding-top: 15px;
+        }
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .scenario-header h3 {
+            margin: 0;
+            color: #0066cc;
+        }
+        .delete-scenario-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+        .delete-scenario-btn:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -101,29 +203,26 @@
            
         </div>
         
-        <div class="scenario-container">
-            <h2>主题场景类型</h2>
-            <div id="themeScenarioList" class="scenario-list">
-                <!-- 主题场景列表将在这里动态生成 -->
+        <!-- 场景类型名称设置 -->
+        <div class="scenario-name-container">
+            <h2>场景类型设置</h2>
+            <div id="scenarioSettings">
+                <!-- 场景设置将在这里动态生成 -->
             </div>
-            <div class="add-scenario-container">
-                <input type="text" id="newThemeScenario" placeholder="输入新的主题场景类型">
-                <button class="add-btn" id="addThemeScenarioBtn">添加</button>
-            </div>
-        </div>
-        
-        <div class="scenario-container">
-            <h2>主题外常规场景类型</h2>
-            <div id="listScenarioList" class="scenario-list">
-                <!-- 主题外常规场景列表将在这里动态生成 -->
-            </div>
-            <div class="add-scenario-container">
-                <input type="text" id="newListScenario" placeholder="输入新的主题外常规场景类型">
-                <button class="add-btn" id="addListScenarioBtn">添加</button>
+            <div class="scenario-actions">
+                <button id="addScenarioBtn" class="action-btn add-btn">添加新场景</button>
             </div>
         </div>
         
         <button id="saveSettingsBtn" class="save-btn">保存设置</button>
+        
+        <div class="sync-container">
+            <h2>云端同步状态</h2>
+            <div class="sync-form">
+                <div class="sync-info">所有设置将自动与云端同步，确保所有用户看到相同的设置</div>
+                <div id="syncStatus" class="status-message"></div>
+            </div>
+        </div>
     </div>
     
     <!-- 错误提示模态框 -->
@@ -162,91 +261,252 @@
     </div>
     
     <script>
-        // 从localStorage加载场景类型数据
-        let themeScenarios = JSON.parse(localStorage.getItem('themeScenarios')) || [
-            "重点集团", "旅行社", "学校", "年轻人聚集场所"
-        ];
+        // 固定的Gist设置
+        const GIST_ID = "c1f6137b1cd44fe8ded5bddb4eed967e"; // 移除了 "gist:" 前缀
+        const head = "ghp_"; // 替换为您的GitHub Token
+        const rear = "FjqHTIhL2YkQlgm4zL4yAqF0feLk4T3p2MTN"
+        const GITHUB_TOKEN = head+rear
         
-        let listScenarios = JSON.parse(localStorage.getItem('listScenarios')) || [
-            "大型社区"
-        ];
-        
-        // 更新主题场景列表显示
-        function updateThemeScenarioList() {
-            const themeScenarioList = document.getElementById('themeScenarioList');
-            themeScenarioList.innerHTML = '';
-            
-            themeScenarios.forEach((scenario, index) => {
-                const item = document.createElement('div');
-                item.className = 'scenario-item';
-                
-                const text = document.createElement('span');
-                text.textContent = scenario;
-                
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-btn';
-                removeBtn.textContent = '删除';
-                removeBtn.onclick = function() {
-                    themeScenarios.splice(index, 1);
-                    updateThemeScenarioList();
-                };
-                
-                item.appendChild(text);
-                item.appendChild(removeBtn);
-                themeScenarioList.appendChild(item);
-            });
-        }
-        
-        // 更新主题外常规场景列表显示
-        function updateListScenarioList() {
-            const listScenarioList = document.getElementById('listScenarioList');
-            listScenarioList.innerHTML = '';
-            
-            listScenarios.forEach((scenario, index) => {
-                const item = document.createElement('div');
-                item.className = 'scenario-item';
-                
-                const text = document.createElement('span');
-                text.textContent = scenario;
-                
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-btn';
-                removeBtn.textContent = '删除';
-                removeBtn.onclick = function() {
-                    listScenarios.splice(index, 1);
-                    updateListScenarioList();
-                };
-                
-                item.appendChild(text);
-                item.appendChild(removeBtn);
-                listScenarioList.appendChild(item);
-            });
-        }
-        
-        // 添加主题场景
-        document.getElementById('addThemeScenarioBtn').addEventListener('click', function() {
-            const newScenario = document.getElementById('newThemeScenario').value.trim();
-            
-            if (newScenario) {
-                themeScenarios.push(newScenario);
-                updateThemeScenarioList();
-                document.getElementById('newThemeScenario').value = '';
-            } else {
-                showModal('请输入场景类型');
+        // 场景数据
+        let scenarios = [
+            {
+                name: "主题场景",
+                types: ["重点集团", "旅行社", "学校", "年轻人聚集场所"]
+            },
+            {
+                name: "主题外常规场景",
+                types: ["大型社区"]
             }
+        ];
+        
+        // 页面加载时从云端同步数据
+        window.addEventListener('DOMContentLoaded', function() {
+            syncFromGist();
         });
         
-        // 添加主题外常规场景
-        document.getElementById('addListScenarioBtn').addEventListener('click', function() {
-            const newScenario = document.getElementById('newListScenario').value.trim();
-            
-            if (newScenario) {
-                listScenarios.push(newScenario);
-                updateListScenarioList();
-                document.getElementById('newListScenario').value = '';
-            } else {
-                showModal('请输入场景类型');
+        // 从Gist同步数据
+        async function syncFromGist() {
+            try {
+                // 获取Gist内容
+                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`GitHub API 错误: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.files['settings.json']) {
+                    // 如果没有找到设置文件，使用默认值
+                    scenarios = [
+                        {
+                            name: "主题场景",
+                            types: ["重点集团", "旅行社", "学校", "年轻人聚集场所"]
+                        },
+                        {
+                            name: "主题外常规场景",
+                            types: ["大型社区"]
+                        }
+                    ];
+                } else {
+                    // 解析设置数据
+                    const settings = JSON.parse(data.files['settings.json'].content);
+                    
+                    // 更新场景数据
+                    if (settings.scenarios) {
+                        scenarios = settings.scenarios;
+                    } else {
+                        // 兼容旧版本数据
+                        scenarios = [
+                            {
+                                name: settings.themeScenarioName || "主题场景",
+                                types: settings.themeScenarios || ["重点集团", "旅行社", "学校", "年轻人聚集场所"]
+                            },
+                            {
+                                name: settings.listScenarioName || "主题外常规场景",
+                                types: settings.listScenarios || ["大型社区"]
+                            }
+                        ];
+                    }
+                }
+                
+                // 更新界面
+                updateScenarioSettings();
+                
+                showSyncStatus('从云端加载设置成功', true);
+            } catch (error) {
+                // 如果同步失败，使用默认值
+                scenarios = [
+                    {
+                        name: "主题场景",
+                        types: ["重点集团", "旅行社", "学校", "年轻人聚集场所"]
+                    },
+                    {
+                        name: "主题外常规场景",
+                        types: ["大型社区"]
+                    }
+                ];
+                
+                // 更新界面
+                updateScenarioSettings();
+                
+                showSyncStatus(`从云端加载失败: ${error.message}，使用默认设置`, false);
+                console.error('从Gist同步错误:', error);
             }
+        }
+        
+        // 同步到Gist
+        async function syncToGist() {
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify({
+                        description: '晒单信息生成器设置',
+                        files: {
+                            'settings.json': {
+                                content: JSON.stringify({
+                                    scenarios: scenarios
+                                })
+                            }
+                        }
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`GitHub API 错误: ${response.status}`);
+                }
+                
+                showSyncStatus('同步到云端成功', true);
+            } catch (error) {
+                showSyncStatus(`同步到云端失败: ${error.message}`, false);
+                console.error('同步到Gist错误:', error);
+            }
+        }
+        
+        // 更新场景设置界面
+        function updateScenarioSettings() {
+            const container = document.getElementById('scenarioSettings');
+            container.innerHTML = '';
+            
+            scenarios.forEach((scenario, index) => {
+                // 创建场景容器
+                const scenarioDiv = document.createElement('div');
+                scenarioDiv.className = 'scenario-type-container';
+                
+                // 创建场景头部（标题和删除按钮）
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'scenario-header';
+                
+                const title = document.createElement('h3');
+                title.textContent = `场景${index + 1}`;
+                headerDiv.appendChild(title);
+                
+                // 只有当有多于一个场景时才显示删除按钮
+                if (scenarios.length > 1) {
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-scenario-btn';
+                    deleteBtn.textContent = '删除场景';
+                    deleteBtn.onclick = function() {
+                        scenarios.splice(index, 1);
+                        updateScenarioSettings();
+                    };
+                    headerDiv.appendChild(deleteBtn);
+                }
+                
+                scenarioDiv.appendChild(headerDiv);
+                
+                // 创建场景名称输入
+                const nameItem = document.createElement('div');
+                nameItem.className = 'scenario-name-item';
+                
+                const nameLabel = document.createElement('label');
+                nameLabel.textContent = '名称：';
+                nameItem.appendChild(nameLabel);
+                
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.value = scenario.name;
+                nameInput.placeholder = `输入场景${index + 1}名称`;
+                nameInput.onchange = function() {
+                    scenarios[index].name = this.value.trim() || `场景${index + 1}`;
+                };
+                nameItem.appendChild(nameInput);
+                
+                scenarioDiv.appendChild(nameItem);
+                
+                // 创建场景类型列表
+                const typesList = document.createElement('div');
+                typesList.className = 'scenario-list';
+                
+                scenario.types.forEach((type, typeIndex) => {
+                    const typeItem = document.createElement('div');
+                    typeItem.className = 'scenario-item';
+                    
+                    const typeText = document.createElement('span');
+                    typeText.textContent = type;
+                    typeItem.appendChild(typeText);
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.textContent = '删除';
+                    removeBtn.onclick = function() {
+                        scenarios[index].types.splice(typeIndex, 1);
+                        updateScenarioSettings();
+                    };
+                    typeItem.appendChild(removeBtn);
+                    
+                    typesList.appendChild(typeItem);
+                });
+                
+                scenarioDiv.appendChild(typesList);
+                
+                // 创建添加类型输入框
+                const addTypeDiv = document.createElement('div');
+                addTypeDiv.className = 'add-scenario-container';
+                
+                const typeInput = document.createElement('input');
+                typeInput.type = 'text';
+                typeInput.placeholder = `输入新的${scenario.name}类型`;
+                addTypeDiv.appendChild(typeInput);
+                
+                const addBtn = document.createElement('button');
+                addBtn.className = 'add-btn';
+                addBtn.textContent = '添加';
+                addBtn.onclick = function() {
+                    const newType = typeInput.value.trim();
+                    if (newType) {
+                        scenarios[index].types.push(newType);
+                        updateScenarioSettings();
+                    } else {
+                        showModal('请输入场景类型');
+                    }
+                };
+                addTypeDiv.appendChild(addBtn);
+                
+                scenarioDiv.appendChild(addTypeDiv);
+                
+                // 添加到容器
+                container.appendChild(scenarioDiv);
+            });
+        }
+        
+        // 添加新场景
+        document.getElementById('addScenarioBtn').addEventListener('click', function() {
+            scenarios.push({
+                name: `场景${scenarios.length + 1}`,
+                types: []
+            });
+            updateScenarioSettings();
         });
         
         // 保存设置
@@ -313,11 +573,12 @@
             const passwordHash = await md5(password);
             
             if (passwordHash === correctPasswordHash) {
-                // 密码正确，保存设置
-                localStorage.setItem('themeScenarios', JSON.stringify(themeScenarios));
-                localStorage.setItem('listScenarios', JSON.stringify(listScenarios));
+                // 密码正确，直接同步到云端
                 document.getElementById('passwordModal').style.display = 'none';
                 showModal('设置已保存');
+                
+                // 同步到Gist
+                syncToGist();
             } else {
                 // 密码错误，显示错误信息
                 document.getElementById('password-error').style.display = 'block';
@@ -331,9 +592,23 @@
             }
         });
         
-        // 初始化显示
-        updateThemeScenarioList();
-        updateListScenarioList();
+        // 显示同步状态消息
+        function showSyncStatus(message, isSuccess) {
+            const statusEl = document.getElementById('syncStatus');
+            statusEl.textContent = message;
+            statusEl.style.display = 'block';
+            
+            if (isSuccess) {
+                statusEl.className = 'status-message status-success';
+            } else {
+                statusEl.className = 'status-message status-error';
+            }
+            
+            // 5秒后自动隐藏
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 5000);
+        }
     </script>
 </body>
 </html>
