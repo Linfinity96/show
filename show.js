@@ -156,12 +156,26 @@ function validateForm() {
 
         // 验证子类型选择
         const subTypeSelect = document.getElementById(`scenario_${scenarioIndex}_types`);
+        let scenarioSubType = '';
         if (subTypeSelect && !subTypeSelect.value) {
             showError(`scenario_${scenarioIndex}_types`, `请选择${scenarios[scenarioIndex].name}类型`);
             isValid = false;
             emptyFields.push(`${scenarios[scenarioIndex].name}类型`);
         } else if (subTypeSelect) {
             hideError(`scenario_${scenarioIndex}_types`);
+            scenarioSubType = subTypeSelect.value;
+        }
+
+        // 如果选择了"大集团"，验证是否指定新员工入职攻坚集团
+        if (scenarioSubType === '大集团') {
+            const isNewEmployee = document.getElementById('isNewEmployee').value;
+            if (!isNewEmployee) {
+                showError('isNewEmployee', '请选择是否为指定新员工入职攻坚集团');
+                isValid = false;
+                emptyFields.push('是否指定新员工入职攻坚集团');
+            } else {
+                hideError('isNewEmployee');
+            }
         }
     }
 
@@ -299,7 +313,7 @@ const GITHUB_TOKEN = head + rear;
 let scenarios = [
     {
         name: "主题场景",
-        types: ["重点集团", "旅行社", "学校", "年轻人聚集场所"]
+        types: ["大集团", "重点集团", "旅行社", "学校", "年轻人聚集场所"]
     },
     {
         name: "主题外常规场景",
@@ -329,7 +343,7 @@ async function loadScenarioOptions() {
             scenarios = [
                 {
                     name: "主题场景",
-                    types: ["重点集团", "旅行社", "学校", "年轻人聚集场所"]
+                    types: ["大集团", "重点集团", "旅行社", "学校", "年轻人聚集场所"]
                 },
                 {
                     name: "主题外常规场景",
@@ -348,7 +362,7 @@ async function loadScenarioOptions() {
                 scenarios = [
                     {
                         name: settings.themeScenarioName || "主题场景",
-                        types: settings.themeScenarios || ["重点集团", "旅行社", "学校", "年轻人聚集场所"]
+                        types: settings.themeScenarios || ["大集团", "重点集团", "旅行社", "学校", "年轻人聚集场所"]
                     },
                     {
                         name: settings.listScenarioName || "主题外常规场景",
@@ -367,7 +381,7 @@ async function loadScenarioOptions() {
         scenarios = [
             {
                 name: "主题场景",
-                types: ["重点集团", "旅行社", "学校", "年轻人聚集场所"]
+                types: ["大集团", "重点集团", "旅行社", "学校", "年轻人聚集场所"]
             },
             {
                 name: "主题外常规场景",
@@ -413,6 +427,9 @@ function updateScenarioSubTypes() {
     // 隐藏所有子类型选择框
     hideAllScenarioSubTypes();
 
+    // 隐藏新员工入职攻坚集团选项
+    document.getElementById('isNewEmployeeGroup').style.display = 'none';
+
     // 如果选择了默认选项，直接返回
     if (!selectedValue || selectedValue === "") {
         return;
@@ -437,6 +454,16 @@ function updateScenarioSubTypes() {
 
         const select = document.createElement('select');
         select.id = `scenario_${scenarioIndex}_types`;
+
+        // 添加子类型变更事件监听器
+        select.addEventListener('change', function () {
+            // 检查是否选择了"大集团"
+            if (this.value === '大集团') {
+                document.getElementById('isNewEmployeeGroup').style.display = 'block';
+            } else {
+                document.getElementById('isNewEmployeeGroup').style.display = 'none';
+            }
+        });
 
         // 添加默认选项
         const defaultOption = document.createElement('option');
@@ -482,6 +509,16 @@ function updateScenarioSubTypes() {
 
         // 更新默认选项文本
         select.options[0].textContent = `请选择${scenario.name}类型`;
+
+        // 添加子类型变更事件监听器
+        select.addEventListener('change', function () {
+            // 检查是否选择了"大集团"
+            if (this.value === '大集团') {
+                document.getElementById('isNewEmployeeGroup').style.display = 'block';
+            } else {
+                document.getElementById('isNewEmployeeGroup').style.display = 'none';
+            }
+        });
 
         // 添加类型选项
         scenario.types.forEach(type => {
@@ -588,6 +625,7 @@ document.getElementById('generateBtn').addEventListener('click', function () {
     const effect = document.getElementById('effect').value;
     const isProperty = document.getElementById('isProperty').value;
     const isEnterpriseGroup = document.getElementById('isEnterpriseGroup').value;
+    const isNewEmployee = document.getElementById('isNewEmployee').value || '';
 
     // 格式化日期
     const date = new Date(time);
@@ -602,16 +640,25 @@ document.getElementById('generateBtn').addEventListener('click', function () {
         }
     });
 
-    // 生成晒单信息（按照新模板）
-    let resultText = `【${gridName}-${scenarioName}：${scenarioSubType} ${activityType}】\n`;
+    // 生成晒单信息
+    let resultText = '';
+
+    // 使用标准模板
+    resultText = `【${gridName}-${scenarioName}：${scenarioSubType} ${activityType}】\n`;
     resultText += `1、${activityType}时间：${formattedDate}\n`;
     resultText += `2、${activityType}地点：${location}\n`;
     resultText += `3、${activityType}人员：${personnelText}\n`;
     resultText += `4、${activityType}成交业务：${business}\n`;
     resultText += `5、${activityType}效果：${effect}\n`;
     resultText += `6、走访集团是否物业类：${isProperty}\n`;
-    resultText += `7、走访集团是否企宽集团：${isEnterpriseGroup}`;
+    resultText += `7、走访集团是否企宽集团：${isEnterpriseGroup}\n`;
 
+    // 检查是否是"大集团"场景
+    if (scenarioSubType === '大集团') {
+        // 使用大集团专用模板
+        resultText += `8、走访集团是否指定新员工入职攻坚集团：${isNewEmployee}\n`;
+        resultText += `9、水印照片：`;
+    }
     // 显示结果
     document.getElementById('resultText').textContent = resultText;
     document.getElementById('resultContainer').style.display = 'block';
